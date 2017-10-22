@@ -29,7 +29,7 @@ class TestGiphy(unittest.TestCase):
         request.get.return_value = self.mock_data
         return self.assertTrue(self.json_data, func)
 
-    @patch('giphy.client.r')
+    @patch('giphy.client.requests')
     def test_search_gifs(self, request):
         self.return_assert(request, self.client.search.gifs(query='Batman'))
 
