@@ -16,6 +16,8 @@ class BaseGiphy:  # pylint: disable=too-few-public-methods
 
         Methods:
             get Make an get request, with default parameters
+            _switch_paras Change params dictionary
+            _get_only_url Retrieve an array with gif objects, and return with urls only
     """
     def __init__(self, api_key=None):
         self.api_key = api_key
@@ -57,7 +59,12 @@ class BaseGiphy:  # pylint: disable=too-few-public-methods
 
 
 class Search(BaseGiphy):
-    """class for the search endpoints"""
+    """Class for the search endpoints
+        Init:
+            api_key api_key An API KEY from the Giphy service.
+        Methods:
+            gifs Return an array with gif object or with urls only
+    """
 
     def __init__(self, api_key):
         super().__init__(api_key=api_key)
@@ -66,7 +73,8 @@ class Search(BaseGiphy):
         """
         :param query: An query argument
         :param only_urls: Return an array with gif urls, if True
-        :param kwargs: Other keys
+        :param kwargs: Other keys, all available
+        limit/offset/rating/lang/fmt
         :return: An dict object, with data
         """
         params = self._switch_params(True, query, **kwargs)
@@ -76,7 +84,32 @@ class Search(BaseGiphy):
         return response
 
 
+class Trending(BaseGiphy):
+    """Class for the trending endpoints
+        Init:
+            api_key An API KEY from the Giphy service.
+        Methods:
+            search_gifs Return an gif objects, or urls only
+    """
+
+    def __init__(self, api_key):
+        super().__init__(api_key)
+
+    def search_gifs(self, only_urls: bool = False, **kwargs):
+        """
+        :param only_urls: Return an array with gif urls, if True
+        :param kwargs: Other keys
+        :return: return an array with objects, or with urls only
+        """
+        params = self._switch_params(True, **kwargs)
+        response = self.get('trending', params)
+        if only_urls:
+            response = self._get_only_url(response)
+        return response
+
+
 class GiphyClient:  # pylint: disable=too-few-public-methods
     """The main client class"""
     def __init__(self, api_key):
         self.search = Search(api_key)
+        self.trending = Trending(api_key)
