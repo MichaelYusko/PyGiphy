@@ -36,6 +36,16 @@ class BaseGiphy:  # pylint: disable=too-few-public-methods
             self.params.update(**kwargs)
         return self.params
 
+    def _get_only_url(self, obj):  # pylint: disable=no-self-use
+        """
+        :param obj: An object, with collection of gif objects.
+        :return: The array with gif urls.
+        """
+        gifs = []
+        for gif in obj['data']:
+            gifs.append(gif['url'])
+        return gifs
+
     def get(self, endpoint: str, params, **kwargs):  # pylint: disable=no-self-use
         """
         :param endpoint: An endpoint, for which we need to do a request
@@ -52,14 +62,17 @@ class Search(BaseGiphy):
     def __init__(self, api_key):
         super().__init__(api_key=api_key)
 
-    def gifs(self, query: str, **kwargs):
+    def gifs(self, query: str, only_urls: bool = False, **kwargs):
         """
         :param query: An query argument
+        :param only_urls: Return an array with gif urls, if True
         :param kwargs: Other keys
         :return: An dict object, with data
         """
         params = self._switch_params(True, query, **kwargs)
         response = self.get('search', params)
+        if only_urls:
+            response = self._get_only_url(response)
         return response
 
 
