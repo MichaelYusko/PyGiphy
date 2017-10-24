@@ -61,7 +61,7 @@ class BaseGiphy:  # pylint: disable=too-few-public-methods
 class Search(BaseGiphy):
     """Class for the search endpoints
         Init:
-            api_key api_key An API KEY from the Giphy service.
+            api_key An API KEY from the Giphy service.
         Methods:
             gifs Return an array with gif object or with urls only
     """
@@ -108,8 +108,30 @@ class Trending(BaseGiphy):
         return response
 
 
+class Translate(BaseGiphy):
+    """Class for the translate endpoints
+        Init:
+            api_key An API KEY from the Giphy service.
+
+        Methods:
+            gifs Return an dict, by string argument
+    """
+    def __init__(self, api_key):
+        super().__init__(api_key)
+
+    def gifs(self, s: str):
+        """
+        :param s: An string, for example 'ryan gosling'
+        :return: An dict object with information
+        """
+        self.params['s'] = s
+        response = self.get('translate', self.params)
+        return response
+
+
 class GiphyClient:  # pylint: disable=too-few-public-methods
     """The main client class"""
     def __init__(self, api_key):
         self.search = Search(api_key)
         self.trending = Trending(api_key)
+        self.translate = Translate(api_key)
