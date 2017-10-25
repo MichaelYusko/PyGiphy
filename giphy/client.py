@@ -12,7 +12,7 @@ class BaseGiphy:  # pylint: disable=too-few-public-methods
     """Base class for the each endpoint classes
 
         Init:
-            api_key An API KEY from the Giphy service.
+            api_key An API KEY from the Giphy service
 
         Methods:
             get Make an get request, with default parameters
@@ -48,14 +48,19 @@ class BaseGiphy:  # pylint: disable=too-few-public-methods
             gifs.append(gif['url'])
         return gifs
 
-    def get(self, endpoint: str, params, **kwargs):  # pylint: disable=no-self-use
+    def _get(self, endpoint: str, params,
+             stickers: bool = False, **kwargs):  # pylint: disable=no-self-use
         """
         :param endpoint: An endpoint, for which we need to do a request
         :param kwargs: Other keys
         :param params: The dict object, with parameters
         :return: an dictionary with information
         """
-        return requests.get(API_URL + endpoint, params=params, **kwargs).json()
+        base_url = API_URL
+        if stickers:
+            base_url = STICKERS_URL
+
+        return requests.get(base_url + endpoint, params=params, **kwargs).json()
 
 
 class Search(BaseGiphy):
@@ -78,7 +83,7 @@ class Search(BaseGiphy):
         :return: An dict object, with data
         """
         params = self._switch_params(True, query, **kwargs)
-        response = self.get('search', params)
+        response = self._get('search', params)
         if only_urls:
             response = self._get_only_url(response)
         return response
@@ -88,7 +93,7 @@ class Search(BaseGiphy):
         :param gif_id: An id of gif
         :return: An dict with gif object
         """
-        return self.get(gif_id, self.params)
+        return self._get(gif_id, self.params)
 
 
 class Trending(BaseGiphy):
@@ -109,7 +114,7 @@ class Trending(BaseGiphy):
         :return: return an array with objects, or with urls only
         """
         params = self._switch_params(True, **kwargs)
-        response = self.get('trending', params)
+        response = self._get('trending', params)
         if only_urls:
             response = self._get_only_url(response)
         return response
@@ -132,13 +137,69 @@ class Translate(BaseGiphy):
         :return: An dict object with information
         """
         self.params['s'] = s
-        response = self.get('translate', self.params)
+        response = self._get('translate', self.params)
         return response
 
 
-class GiphyClient:  # pylint: disable=too-few-public-methods
+class Stickers(BaseGiphy):
+    """Class for the stickers endpoints
+        Init:
+            api_key An API KEY from the Giphy service
+
+        Methods:
+            get Return an array with stickers
+    """
+
+    def __init__(self, api_key):
+        super().__init__(api_key)
+
+    def get(self, query: str, **kwargs):
+        """
+        :param query: An query argument
+        :param kwargs: Other keys, all available
+        limit/offset/rating/lang/fmt
+        :return:
+        """
+        params = self._switch_params(True, query, **kwargs)
+        response = self._get('search', params, True,  **kwargs)
+        return response
+
+    def trending(self, only_urls: bool = True, **kwargs):
+        """
+        :param only_urls: Return urls only
+        :param kwargs: Other keys, all available
+        fmt/limit/rating
+        :return: And anrray with sticker objects
+        """
+        params = self._switch_params(True, **kwargs)
+        response = self._get('trending', params, True,  **kwargs)
+        if only_urls:
+            response = self._get_only_url(response)
+        return response
+
+    def translate(self, s: str):
+        """
+        :param s: An string argument
+        :return: An object with stickers
+        """
+        self.params['s'] = s
+        response = self._get('translate', self.params, True)
+        return response
+
+    def random(self, **kwargs):
+        """
+        :param kwargs: Other keys, all available
+        tag/rating/fmt
+        :return:
+        """
+        response = self._get('random', self.params, True, **kwargs)
+        return response
+
+
+class GiphyClient:  # pylint: di§sable=too-few-public-methods
     """The main client class"""
     def __init__(self, api_key):
         self.search = Search(api_key)
         self.trending = Trending(api_key)
         self.translate = Translate(api_key)
+        self.stickers = Stickers(api_key)
