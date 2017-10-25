@@ -48,7 +48,8 @@ class BaseGiphy:  # pylint: disable=too-few-public-methods
             gifs.append(gif['url'])
         return gifs
 
-    def _get(self, endpoint: str, params, stickers: bool = False, **kwargs):  # pylint: disable=no-self-use
+    def _get(self, endpoint: str, params,
+             stickers: bool = False, **kwargs):  # pylint: disable=no-self-use
         """
         :param endpoint: An endpoint, for which we need to do a request
         :param kwargs: Other keys
