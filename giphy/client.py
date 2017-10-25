@@ -83,6 +83,13 @@ class Search(BaseGiphy):
             response = self._get_only_url(response)
         return response
 
+    def gif_by_id(self, gif_id: str):
+        """
+        :param gif_id: An id of gif
+        :return: An dict with gif object
+        """
+        return self.get(gif_id, self.params)
+
 
 class Trending(BaseGiphy):
     """Class for the trending endpoints
