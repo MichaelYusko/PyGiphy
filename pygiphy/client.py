@@ -236,4 +236,4 @@ class GiphyClient:
         self.stickers_packs = StickerPacks(api_key)
 
     def __repr__(self):
-        return f'GiphyClient(api_key={self._key})'
+        return "GiphyClient(API_KEY={})".format(self._key)
