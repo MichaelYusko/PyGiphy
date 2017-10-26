@@ -21,7 +21,7 @@ Usage
 
 ### Auth
 ```python
-from giphy.client import GiphyClient
+from pygiphy.client import GiphyClient
 
 # Create an instance of GiphyClient
 giphy = GiphyClient('YOUR_API_KEY')

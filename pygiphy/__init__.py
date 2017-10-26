@@ -4,4 +4,4 @@
 :license: MIT, see LICENSE for more details.
 """
 __author__ = 'Mike Yusko'
-__version__ = '0.1.0'
+__version__ = '0.1.1'
