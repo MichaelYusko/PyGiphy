@@ -1,4 +1,5 @@
 """
+¯\_(ツ)_/¯
 :copyright: Mike Yusko
 :license: MIT, see LICENSE for more details.
 """

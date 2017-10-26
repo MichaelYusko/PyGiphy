@@ -4,7 +4,7 @@ import unittest
 
 from mock import MagicMock, patch
 
-from giphy.client import GiphyClient
+from pygiphy.client import GiphyClient
 
 json_data = [{
     'id': '1',
@@ -29,7 +29,7 @@ class TestGiphy(unittest.TestCase):
         request.get.return_value = self.mock_data
         return self.assertTrue(self.json_data, func)
 
-    @patch('giphy.client.requests')
+    @patch('pygiphy.client.requests')
     def test_search_gifs(self, request):
         self.return_assert(request, self.client.search.gifs(query='Batman'))
 

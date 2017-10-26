@@ -1,19 +1,19 @@
 from distutils.core import setup
 
-import giphy
+import pygiphy
 
-VERSION = giphy.__version__
-AUTHOR = giphy.__author__
+VERSION = pygiphy.__version__
+AUTHOR = pygiphy.__author__
 
 setup_kwargs = {
-    'name': 'giphy',
+    'name': 'pygiphy',
     'version': VERSION,
     'url': 'https://github.com/MichaelYusko/PyGiphy',
     'license': 'MIT',
     'author': AUTHOR,
     'author_email': 'freshjelly12@yahoo.com',
     'description': 'Python interface for the Giphy API',
-    'packages': ['giphy'],
+    'packages': ['pygiphy'],
     'classifiers': [
         'Development Status :: 2 - Pre-Alpha',
         'Environment :: Web Environment',

@@ -6,6 +6,7 @@ from .exceptions import GiphyTokenError
 
 API_URL = constants.API_URL_V1
 STICKERS_URL = constants.API_STICKERS_URL_V1
+STICKERS_PACKS_URL = constants.API_STICKERS_PACKS_URL_V1
 
 
 class BaseGiphy:  # pylint: disable=too-few-public-methods
@@ -48,8 +49,10 @@ class BaseGiphy:  # pylint: disable=too-few-public-methods
             gifs.append(gif['url'])
         return gifs
 
-    def _get(self, endpoint: str, params,
-             stickers: bool = False, **kwargs):  # pylint: disable=no-self-use
+    def _get(self, endpoint, params,
+             stickers: bool = False,
+             stickers_packs: bool = False,
+             **kwargs):  # pylint: disable=no-self-use
         """
         :param endpoint: An endpoint, for which we need to do a request
         :param kwargs: Other keys
@@ -57,8 +60,15 @@ class BaseGiphy:  # pylint: disable=too-few-public-methods
         :return: an dictionary with information
         """
         base_url = API_URL
+
+        if isinstance(endpoint, int):
+            endpoint = str(endpoint)
+
         if stickers:
             base_url = STICKERS_URL
+
+        if stickers_packs:
+            base_url = STICKERS_PACKS_URL
 
         return requests.get(base_url + endpoint, params=params, **kwargs).json()
 
@@ -96,7 +106,7 @@ class Search(BaseGiphy):
         return self._get(gif_id, self.params)
 
 
-class Trending(BaseGiphy):
+class Trending(BaseGiphy):  # pylint: disable=too-few-public-methods
     """Class for the trending endpoints
         Init:
             api_key An API KEY from the Giphy service.
@@ -104,7 +114,7 @@ class Trending(BaseGiphy):
             search_gifs Return an gif objects, or urls only
     """
 
-    def __init__(self, api_key):
+    def __init__(self, api_key):  # pylint: disable=useless-super-delegation
         super().__init__(api_key)
 
     def search_gifs(self, only_urls: bool = False, **kwargs):
@@ -128,7 +138,7 @@ class Translate(BaseGiphy):
         Methods:
             gifs Return an dict, by string argument
     """
-    def __init__(self, api_key):
+    def __init__(self, api_key):  # pylint: disable=useless-super-delegation
         super().__init__(api_key)
 
     def gifs(self, s: str):
@@ -161,10 +171,10 @@ class Stickers(BaseGiphy):
         :return:
         """
         params = self._switch_params(True, query, **kwargs)
-        response = self._get('search', params, True,  **kwargs)
+        response = self._get('search', params, stickers=True, **kwargs)
         return response
 
-    def trending(self, only_urls: bool = True, **kwargs):
+    def trending(self, only_urls: bool = False, **kwargs):
         """
         :param only_urls: Return urls only
         :param kwargs: Other keys, all available
@@ -172,7 +182,7 @@ class Stickers(BaseGiphy):
         :return: And anrray with sticker objects
         """
         params = self._switch_params(True, **kwargs)
-        response = self._get('trending', params, True,  **kwargs)
+        response = self._get('trending', params, stickers=True, **kwargs)
         if only_urls:
             response = self._get_only_url(response)
         return response
@@ -192,14 +202,38 @@ class Stickers(BaseGiphy):
         tag/rating/fmt
         :return:
         """
-        response = self._get('random', self.params, True, **kwargs)
+        response = self._get('random', self.params, stickers=True, **kwargs)
         return response
 
 
-class GiphyClient:  # pylint: di§sable=too-few-public-methods
+class StickerPacks(BaseGiphy):
+    """Class for the sticker packs endpoints
+        Init:
+            api_key  An API KEY from the Giphy service.
+        Methods:
+            listing Returns a list of all sticker packs available.
+                    Hand-curated by the GIPHY editorial team.
+    """
+    def __init__(self, api_key):
+        super().__init__(api_key)
+
+    def listing(self):
+        """
+        :return: An array with objects
+        """
+        response = self._get('packs', self.params, stickers=True)
+        return response
+
+
+class GiphyClient:
     """The main client class"""
     def __init__(self, api_key):
+        self._key = api_key
         self.search = Search(api_key)
         self.trending = Trending(api_key)
         self.translate = Translate(api_key)
         self.stickers = Stickers(api_key)
+        self.stickers_packs = StickerPacks(api_key)
+
+    def __repr__(self):
+        return f'GiphyClient(api_key={self._key})'
