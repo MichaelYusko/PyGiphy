@@ -9,15 +9,16 @@ Releases
 =================================
 * 0.1.0 - PyPi
 
+Installation
+============
+```
+pip install pygiphy
+```
 
 Asynchronous Version
 ====================
 [The-PyWaiters GiphyPy](https://github.com/The-PyWaiters/GiphyPy)
 
-=================================
-```
-pip install pygiphy
-```
 
 Usage
 =================================
