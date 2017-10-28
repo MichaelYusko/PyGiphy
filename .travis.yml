@@ -11,5 +11,6 @@ install:
   - pip install -U setuptools
   - pip install -r requirements-dev.txt
 script:
+  - python tests/test_giphy.py
   - flake8 . --max-line-length=100
   - isort
